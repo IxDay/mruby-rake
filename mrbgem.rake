@@ -14,13 +14,13 @@ MRuby::Gem::Specification.new('mruby-rake') do |spec|
   spec.license = 'MIT'
   spec.author  = 'ksss <co000ri@gmail.com>'
 
-  next if spec.for_windows?
+  name = spec.for_windows? ? "mrake.bat" : "mrake"
 
   mruby_rake_dir = File.join(build.build_dir, "bin")
-  mruby_rake_path = File.join(mruby_rake_dir, "mrake")
-  mruby_rake_src_path = File.join(__dir__, "bin", "mrake")
+  mruby_rake_path = File.join(mruby_rake_dir, name)
+  mruby_rake_src_path = File.join(__dir__, "bin", name)
 
-  build.bins << "mrake"
+  build.bins << name
 
   directory mruby_rake_dir
 
