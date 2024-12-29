@@ -58,10 +58,10 @@ class File
     MSWINDOWS = false
   end
 
-  if File::ALT_SEPARATOR
-    private_constant :WIN32EXTS
-    private_constant :MSWINDOWS
-  end
+  # if File::ALT_SEPARATOR
+  #   private_constant :WIN32EXTS
+  #   private_constant :MSWINDOWS
+  # end
 
   def self.which(program, path = ENV['PATH'])
     raise ArgumentError, 'path cannot be empty' if path.nil? || path.empty?
