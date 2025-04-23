@@ -43,6 +43,24 @@ module Rake
     end
   end
 
+  class RuleTask < Task
+    def enhance(dependencies, &block)
+      @actions << block if block
+      dependencies.each do |d|
+        Dir.glob("**/*"+d).each do |f|
+          name = f.delete_suffix(d) + @name
+          Rake::FileTask.define_task(name => [f]) { |t|
+            @actions.each { |b| b.call(t) }
+          }
+          @prerequisites << name
+        end
+      end
+    end
+    def invoke = @prerequisites.each {|p| Rake.application.tasks[p].invoke}
+    def timestamp = @prerequisites.collect { |p| Rake.application.tasks[p].timestamp }.max
+    def needed? =  @prerequisites.any? { |n| Rake.application.tasks[n].needed?  }
+  end
+
   class FileTask < Task
     def needed? = !File.exist?(name) || out_of_date?(timestamp)
     def timestamp = (File::Stat.new(name).mtime if File.exist?(name))

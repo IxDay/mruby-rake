@@ -1,8 +1,8 @@
 module Rake
   module DSL
     def task(*args, &block) = Rake::Task.define_task(*args, &block)
-
     def file(*args, &block) = Rake::FileTask.define_task(*args, &block)
+    def rule(*args, &block) = Rake::RuleTask.define_task(*args, &block)
 
     def has?(executable) = !!File.which(executable)
 
@@ -49,15 +49,6 @@ module Rake
         end
       end
       files
-    end
-
-    def rule(*args, &block)
-      dst, src = args.first.first
-      Dir.glob("**/*"+src).each do |f|
-        name = f.delete_suffix(src)+dst
-        task dst => [name]
-        file(name => [f]) { |t| block.call t }
-      end
     end
 
     def directory(*args, &block) # :doc:
