@@ -20,7 +20,7 @@ module Rake
     def invoke
       return if @already_invoked
       return unless needed?
-      @prerequisites.each {|p| Rake.application.tasks[p].invoke}
+      @prerequisites.each {|p| Rake[p].invoke}
       @actions.each {|b| b.call(self)}
       @already_invoked = true
     end
@@ -37,9 +37,7 @@ module Rake
     def timestamp = Time.now
 
     class << self
-      def [](task_name)
-        Rake.application.tasks[task_name.to_s]
-      end
+      def [](task_name) = Rake[task_name.to_s]
     end
   end
 
@@ -56,16 +54,16 @@ module Rake
         end
       end
     end
-    def invoke = @prerequisites.each {|p| Rake.application.tasks[p].invoke}
-    def timestamp = @prerequisites.collect { |p| Rake.application.tasks[p].timestamp }.max
-    def needed? =  @prerequisites.any? { |n| Rake.application.tasks[n].needed?  }
+    def invoke = @prerequisites.each {|p| Rake[p].invoke}
+    def timestamp = @prerequisites.collect { |p| Rake[p].timestamp }.max
+    def needed? =  @prerequisites.any? { |p| Rake[p].needed?  }
   end
 
   class FileTask < Task
     def needed? = !File.exist?(name) || out_of_date?(timestamp)
     def timestamp = (File::Stat.new(name).mtime if File.exist?(name))
     def out_of_date?(stamp) = @prerequisites.any? { |n|
-      Rake.application.tasks[n].needed? || Rake.application.tasks[n].timestamp > stamp
+      Rake[n].needed? || Rake[n].timestamp > stamp
     }
   end
 
